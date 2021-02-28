@@ -1,0 +1,40 @@
+class Solution:
+    def palindromePairs(self, words: List[str]) -> List[List[int]]:
+        def get_valid_prefixes(word):
+            # return all the prefixes which makes the rest of word as a palindrome
+            lst = []
+            for i in range(len(word)):
+                if word[i:]  == word[i:][::-1]:
+                    lst.append(word[:i])
+            return lst
+        
+        def get_valid_suffixes(word):
+            # return all the suffixes which makes the rest of word as a palindrome
+            lst = []
+            for i in range(len(word)):
+                if word[:i+1] == word[:i+1][::-1]:
+                    lst.append(word[i+1:])
+            return lst
+        
+        word_ids = {word: i for i, word in enumerate(words)}
+        ans = []
+        
+        for idx, word in enumerate(words):
+            rev_word = word[::-1]
+            
+            # the rev_word exists in the words and it is not the word itself: abc cba
+            if rev_word in word_ids and word_ids[rev_word] != idx:
+                ans.append([idx, word_ids[rev_word]])
+                
+            for suffix in get_valid_suffixes(word):
+                # e.g. exepa -> suffix: pa, which mactch with ap => ap + exepa
+                rev_suffix = suffix[::-1]
+                if rev_suffix in word_ids:
+                    ans.append([word_ids[rev_suffix], idx])
+            
+            for prefix in get_valid_prefixes(word):
+                # e.g. apexe -> prefix: ap, which match with pa => apexe + pa
+                rev_prefix = prefix[::-1]
+                if rev_prefix in word_ids:
+                    ans.append([idx, word_ids[rev_prefix]])
+        return ans
