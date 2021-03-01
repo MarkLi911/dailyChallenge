@@ -1,0 +1,71 @@
+class TrieNode():
+    def __init__(self):
+        self.children = dict()
+        self.count = 0
+
+class AutocompleteSystem:
+
+    def __init__(self, sentences: List[str], times: List[int]):
+        self.root = TrieNode()
+        self.inputs = ''
+        
+        for sent, time in zip(sentences, times):
+            self.insert_trie(sent, time)
+
+    def input(self, c: str) -> List[str]:
+        if c == '#':
+            self.insert_trie(self.inputs, 1)
+            self.inputs = ''
+            return None
+        self.inputs += c
+        ans = self.find_str()
+        return ans
+    
+    def insert_trie(self, sent, time):
+        cur = self.root
+        for char in sent:
+            if char not in cur.children:
+                node = TrieNode()
+                cur.children[char] = node
+            cur = cur.children[char]
+        cur.count += time
+        
+    def find_str(self):
+        cur = self.root
+        for char in self.inputs:
+            if char not in cur.children:
+                return []
+            cur = cur.children[char]
+        
+        lst = self.dfs(cur)
+        ans = [self.inputs+sent for count, sent in lst]
+        return ans
+    
+    def dfs(self, node):
+        suffix_lst = []
+        suffix = ''
+        self.helper(node, suffix, suffix_lst)
+        
+        suffix_lst = sorted(suffix_lst)
+        if len(suffix_lst) > 3:
+            suffix_lst = suffix_lst[:3]
+        return suffix_lst
+            
+    def helper(self, cur, suffix, suffix_lst):
+        if cur.count > 0:
+            suffix_lst.append((-cur.count, suffix))
+            
+        if len(cur.children) == 0:
+            return
+        
+        for char in cur.children:
+            suffix += char
+            nxt_node = cur.children[char]
+            self.helper(nxt_node, suffix, suffix_lst)
+            suffix = suffix[:-1]
+        
+    
+
+# Your AutocompleteSystem object will be instantiated and called as such:
+# obj = AutocompleteSystem(sentences, times)
+# param_1 = obj.input(c)
