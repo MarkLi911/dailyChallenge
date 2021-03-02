@@ -1,0 +1,50 @@
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        while root:
+            if max(p.val, q.val) < root.val:
+                root = root.left
+            elif min(p.val, q.val) > root.val:
+                root = root.right
+            else:
+                return root
+            
+"""
+# The following approach does not use the BST's property,suitable to LC236
+from collections import deque
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        qu = deque([root])
+        flag = 0
+        par_dict = {root: None}
+        
+        while qu and flag < 2:
+            cur = qu.popleft()
+            if cur == p:
+                flag += 1
+            if cur == q:
+                flag += 1
+            
+            if cur.left:
+                par_dict[cur.left] = cur
+                qu.append(cur.left)
+            if cur.right:
+                par_dict[cur.right] = cur
+                qu.append(cur.right)
+        
+        p_par = set()
+        while p:
+            p_par.add(p)
+            p = par_dict[p]
+        
+        while q:
+            if q in p_par:
+                return q
+            q = par_dict[q]
+""" 
