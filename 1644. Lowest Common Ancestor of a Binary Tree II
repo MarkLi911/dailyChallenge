@@ -1,0 +1,39 @@
+from collections import deque
+class Solution:
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        if root is None:
+            return None
+        
+        cur = root
+        par_d = {cur: None}
+        qu = deque([cur])
+        visited = 0
+        
+        while qu:
+            cur = qu.popleft()
+            if cur == p:
+                visited += 1
+            elif cur == q:
+                visited += 1
+            if visited == 2:
+                break
+            
+            if cur.left:
+                par_d[cur.left] = cur
+                qu.append(cur.left)
+            if cur.right:
+                par_d[cur.right] = cur
+                qu.append(cur.right)
+        
+        if visited != 2:
+            return None
+        
+        p_par = set([p])
+        while p in par_d:
+            p_par.add(par_d[p])
+            p = par_d[p]
+            
+        while q in par_d:
+            if q in p_par:
+                return q
+            q = par_d[q]
