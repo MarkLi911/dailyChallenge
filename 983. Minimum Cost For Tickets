@@ -1,0 +1,37 @@
+class Solution:
+    def mincostTickets(self, days: List[int], costs: List[int]) -> int:
+        dayset = set(days)
+        durations = [1, 7, 30]
+        
+        @lru_cache(None)
+        def dp(i):    # How much money to do days[i]+
+            if i > 365:
+                return 0
+            elif i in dayset:
+                tmp = float('inf')
+                for c, d in zip(costs, durations):
+                    tmp = min(tmp, dp(i+d) + c)
+                return tmp
+            else:
+                return dp(i+1)
+        
+        return dp(1)
+    
+    def mincostTickets(self, days: List[int], costs: List[int]) -> int:
+        n = len(days)
+        durations = [1, 7, 30]
+        
+        @lru_cache(None)
+        def dp(i):
+            if i >= n:
+                return 0
+            
+            ans = float('inf')
+            j = i
+            
+            for c, d in zip(costs, durations):
+                while j < n and days[j] < days[i] + d:
+                    j += 1
+                ans = min(ans, dp(j) + c)        
+            return ans
+        return dp(0)
